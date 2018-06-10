@@ -5,6 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var partials = require('express-partials');
 var indexRouter = require('./routes/index');
+var methodOverride = require('method-override');
 
 var app = express();
 
@@ -16,8 +17,10 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(methodOverride('_method', {methods: ["POST","GET"]}));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(partials());
+
 app.use('/', indexRouter);
 
 // catch 404 and forward to error handler
