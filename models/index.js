@@ -5,6 +5,7 @@ const sequelize = new Sequelize("sqlite:quiz.sqlite", {logging: false});
 const path = require('path');
 
 sequelize.import(path.join(__dirname, 'quiz'));
+sequelize.import(path.join(__dirname, 'session'));
 
 sequelize.sync()
 .then(()=> console.log('Data Bases created successfully'))

@@ -6,6 +6,9 @@ var logger = require('morgan');
 var partials = require('express-partials');
 var indexRouter = require('./routes/index');
 var methodOverride = require('method-override');
+var session = require('express-session');
+var SequelizeStore = require('connect-session-sequelize')(session.Store);
+var flash = require('express-flash');
 
 var app = express();
 
@@ -20,6 +23,23 @@ app.use(cookieParser());
 app.use(methodOverride('_method', {methods: ["POST","GET"]}));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(partials());
+
+// Session configuration to be stored in DB with Sequelize
+var sequelize = require("./models");
+var sessionStore = new SequelizeStore({
+	db: sequelize,
+	table: "session",
+	checkExpirationInterval: 15*60*1000,
+	expiration: 4*60*60*1000
+});
+app.use(session({
+	secret: "Quiz 2018",
+	store: sessionStore,
+	resave: false,
+	saveUninitalized: true
+}));
+app.use(flash());
+
 
 app.use('/', indexRouter);
 
