@@ -60,6 +60,11 @@
 
 
 		<%- body %>
+
+		<% if(locals.paginate_control){ %>
+		<%- paginate_control %>
+		<%}%>
+
 </section>
 <footer class="main" id="mainFooter">
 	<a href="http://dveni.github.io">Check my website!</a>
