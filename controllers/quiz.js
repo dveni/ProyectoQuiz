@@ -6,7 +6,7 @@ const paginate = require('../helpers/paginate').paginate;
 // Autoload el quiz asociado a :quizId
 exports.load = (req,res,next, quizId) =>{
 	
-	models.quiz.findById(quizId)
+	models.quiz.findById(quizId, {include: [models.tip ]})
 	.then(quiz => {
 		if (quiz) {
 		req.quiz = quiz;
