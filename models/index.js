@@ -13,7 +13,13 @@ const path = require('path');
 
 sequelize.import(path.join(__dirname, 'quiz'));
 sequelize.import(path.join(__dirname, 'session'));
+sequelize.import(path.join(__dirname, 'tip'));
 
+// Relation between models
 
+const {quiz, tip} = sequelize.models;
+
+tip.belongsTo(quiz);
+quiz.hasMany(tip);
 
 module.exports =sequelize;
