@@ -1,19 +1,9 @@
 'use strict';
+
 var crypt = require('../helpers/crypt');
 
 module.exports = {
-  up: (queryInterface, Sequelize) => {
-    /*
-      Add altering commands here.
-      Return a promise to correctly handle asynchronicity.
-
-      Example:
-      return queryInterface.bulkInsert('Person', [{
-        name: 'John Doe',
-        isBetaMember: false
-      }], {});
-    */
-
+  up(queryInterface, Sequelize) {
     return queryInterface.bulkInsert('users', [
     {
       username: 'admin',
@@ -30,10 +20,10 @@ module.exports = {
       createdAt: new Date(),
       updatedAt: new Date()
     }
-      ])
+      ]);
   },
 
-  down: (queryInterface, Sequelize) => {
+  down(queryInterface, Sequelize) {
     /*
       Add reverting commands here.
       Return a promise to correctly handle asynchronicity.
