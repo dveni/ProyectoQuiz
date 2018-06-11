@@ -26,4 +26,10 @@ module.exports = function(sequelize, DataTypes){
 		}
 		
 	});
+
+	User.prototype.verifyPassword = function (password) {
+        return crypt.encryptPassword(password, this.salt) === this.password;
+    };
+
+    return User;
 };
