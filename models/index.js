@@ -1,6 +1,13 @@
 const Sequelize = require('sequelize');
 
-const sequelize = new Sequelize("sqlite:quiz.sqlite", {logging: false});
+// To use SQLite db:
+// DATABASE_URL = sqlite:quiz.sqlite
+// To use Heroku Postgres db:
+// DATABASE_URL = postgres://user:passwd@host:port/database
+
+const url = process.env.DATABASE_URL || "sqlite:quiz.sqlite";
+
+const sequelize = new Sequelize(url);
 
 const path = require('path');
 
