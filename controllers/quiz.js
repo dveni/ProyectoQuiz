@@ -22,7 +22,15 @@ exports.load = (req,res,next, quizId) =>{
 // GET /quizzes
 exports.index = (req,res,next) => {
 	
-	models.quiz.count()
+	let countOptions = {};
+
+	const search = req.query.search || '';
+	if(search){
+		const  search_like = "%" +search.replace(/ +/g, "%") + "%";
+		countOptions.where = {question:{ [Sequelize.Op.like]: search_like }};
+	}
+
+	models.quiz.count(countOptions)
 	.then(count =>{
 		const items_per_page = 10;
 
@@ -31,13 +39,14 @@ exports.index = (req,res,next) => {
 		res.locals.paginate_control = paginate(count, items_per_page, pageno, req.url);
 
 		const findOptions = {
+			...countOptions,
 			offset: items_per_page * (pageno-1),
 			limit: items_per_page
 		};
 		return models.quiz.findAll(findOptions);
 	})
 	.then(quizzes=>{
-		res.render('quizzes/index.ejs', {quizzes});
+		res.render('quizzes/index.ejs', {quizzes, search});
 	})
 	.catch(error=> next(error));
 
