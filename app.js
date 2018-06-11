@@ -40,6 +40,10 @@ app.use(session({
 }));
 app.use(flash());
 
+app.use(function(req,res,next){
+	res.locals.session = req.session;
+	next();
+});
 
 app.use('/', indexRouter);
 
