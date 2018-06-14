@@ -18,9 +18,12 @@ sequelize.import(path.join(__dirname, 'user'));
 
 // Relation between models
 
-const {quiz, tip} = sequelize.models;
+const {quiz, tip, user} = sequelize.models;
 
 tip.belongsTo(quiz);
 quiz.hasMany(tip);
+
+user.hasMany(quiz, {foreignKey: 'authorId'});
+quiz.belongsTo(user, {as: 'author',foreignKey: 'authorId'})
 
 module.exports =sequelize;
