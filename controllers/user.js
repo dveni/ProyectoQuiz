@@ -144,7 +144,7 @@ exports.destroy = (req,res,next) => {
 		delete req.session.user;
 	}
 		req.flash('success', 'User deleted successfully');
-		res.redirect('/users');
+		res.redirect('/goback');
 	})
 	.catch(error=>{
 		req.flash('error','Error deleting the user: '+ error.message);

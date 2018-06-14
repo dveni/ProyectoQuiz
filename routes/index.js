@@ -10,6 +10,25 @@ const sessionController = require('../controllers/session');
 
 router.all('*', sessionController.deleteExpiredUserSession);
 
+function redirectBack(req,res,next){
+	const url = req.session.backURL || "/";
+	delete req.session.backURL;
+	res.redirect(url);
+}
+
+router.get('/goback', redirectBack);
+
+function saveBack(req,res,next){
+	req.session.backURL = req.url;
+	next();
+}
+
+router.get(['/', '/author', '/users', '/users/:id(\\d+)/quizzes',
+	'/quizzes'], saveBack);
+
+	
+
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Quiz' });
