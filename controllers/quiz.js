@@ -26,12 +26,18 @@ exports.load = (req,res,next, quizId) =>{
 // GET /quizzes
 exports.index = (req,res,next) => {
 	
-	let countOptions = {};
+	let countOptions = { where: {}};
+	let title = "Questions";
 
 	const search = req.query.search || '';
 	if(search){
 		const  search_like = "%" +search.replace(/ +/g, "%") + "%";
 		countOptions.where = {question:{ [Sequelize.Op.like]: search_like }};
+	}
+
+	if(req.user){
+		countOptions.where.authorId = req.user.id;
+		title = "Questions of" + req.user.username;
 	}
 
 	models.quiz.count(countOptions)
@@ -51,7 +57,7 @@ exports.index = (req,res,next) => {
 		return models.quiz.findAll(findOptions);
 	})
 	.then(quizzes=>{
-		res.render('quizzes/index.ejs', {quizzes, search});
+		res.render('quizzes/index.ejs', {quizzes, search, title});
 	})
 	.catch(error=> next(error));
 
