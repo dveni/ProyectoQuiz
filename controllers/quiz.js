@@ -3,12 +3,24 @@ const {models} = require ("../models");
 
 const paginate = require('../helpers/paginate').paginate;
 
+const cloudinary = require('cloudinary');
+const fs = require('fs');
+const attHelper = require('../helpers/attachments');
+
+const cloudinary_upload_option = {
+	async: true,
+	folder: "/daveni-quiz/attachments",
+	resource_type: "auto",
+	tags: ['core', 'quiz']
+};
+
 // Autoload el quiz asociado a :quizId
 exports.load = (req,res,next, quizId) =>{
 	
 	models.quiz.findById(quizId, {
 		include: [
 		models.tip,
+		models.attachment,
 		{model: models.user, as:'author'} ]
 	})
 	.then(quiz => {
@@ -65,12 +77,14 @@ exports.index = (req,res,next) => {
 			...countOptions,
 			offset: items_per_page * (pageno-1),
 			limit: items_per_page,
-			include: [{model: models.user, as:'author'}]
+			include: [
+				models.attachment,
+				{model: models.user, as:'author'}]
 		};
 		return models.quiz.findAll(findOptions);
 	})
 	.then(quizzes=>{
-		res.render('quizzes/index.ejs', {quizzes, search, title});
+		res.render('quizzes/index.ejs', {quizzes, search, cloudinary, title});
 	})
 	.catch(error=> next(error));
 
@@ -82,7 +96,7 @@ exports.show = (req,res,next) => {
 	
 	const {quiz} = req;
 
-	res.render('quizzes/show', {quiz});
+	res.render('quizzes/show', {quiz, cloudinary});
 };
 
 // GET /quizzes/new
@@ -110,12 +124,47 @@ exports.create = (req,res,next) => {
 	quiz.save({fields: ["question", "answer", "authorId"]})
 	.then(quiz => {
 		req.flash('success','Quiz created successfully.')
-		res.redirect('/quizzes/'+quiz.id)
+		
+		if(!req.file){
+			req.flash('info', 'Quiz without attachment');
+			res.redirect('/quizzes/'+quiz.id);
+			return;
+			
+		}
+		// Save the attachment into Cloudinary
+		return attHelper.checksCloudinaryEnv()
+		.then( ()=>{
+			return attHelper.uploadResourceToCloudinary(req.file.path, cloudinary_upload_option);
+		})
+		.then(uploadResult =>{
+
+			// Create the new attachment into the database
+			return models.attachment.create({
+				public_id: uploadResult.public_id,
+				url: uploadResult.url,
+				filename: req.file.originalname,
+				mime: req.file.mimetype,
+				quizId: quiz.id })
+			.then(attachment =>{
+				req.flash('success', 'Image saved succesfully');
+			})
+			.catch(error =>{
+				req.flash('error', 'Failed to save the file: '+error.message);
+				cloudinary.api.delete_resources(uploadResult.public_id);
+			});
+		})
+		.catch(error =>{
+			req.flash('error', 'Failed to save attachment: '+ error.message);
+		})
+		.then(()=>{
+			fs.unlink(req.file.path); //delete the file uploaded at ./uploads
+			res.redirect('/quizzes/' + quiz.id);
+		});
 	})
 	.catch(Sequelize.ValidationError, error =>{
 
 		req.flash('error','There are errors in the form:');
-		error.errors.forEach(({message}) => req.flash('error', message));
+		error.errors.forEach(({message}) => req.flash('error',  message));
 		res.render('quizzes/new', {quiz});
 	})
 	.catch(error => {
@@ -145,7 +194,64 @@ exports.update = (req,res,next) => {
 	quiz.save({fields: ["question", "answer"]})
 	.then(quiz => {
 		req.flash('success', 'Quiz edited successfully.');
-		res.redirect('/quizzes/'+quiz.id);
+
+		if(!body.keepAttachment){
+			// There is no attachment: Delete old attachment
+			if(!req.file){
+				req.flash('info', 'This quiz has no attachment');
+				if(quiz.attachment){
+					cloudinary.api.delete_resources(quiz.attachment.public_id);
+					quiz.attachment.destroy();
+				}
+				return;
+			}
+
+			// Save the new attachment into Cloudinary
+
+			return attHelper.checksCloudinaryEnv()
+			.then(()=>{
+				return attHelper.uploadResourceToCloudinary(req.file.path, cloudinary_upload_option);
+			})
+			.then(uploadResult => {
+				//Remember the public id of the old image
+				const old_public_id = quiz.attachment ? quiz.attachment.public_id : null;
+
+				// Update the attachment into the db
+				return quiz.getAttachment()
+				.then(attachment =>{
+					if(!attachment){
+						attachment = models.attachment.build({quizId: quiz.id});
+					}
+					attachment.public_id = uploadResult.public_id;
+					attachment.url = uploadResult.url;
+					attachment.filename = req.file.originalname;
+					attachment.mime = req.file.mimetype;
+					return attachment.save();
+				})
+				.then(attachment =>{
+					req.flash('success', 'Image saved succesfully');
+					if(old_public_id){
+						cloudinary.api.delete_resources(old_public_id);
+					}
+				})
+				.catch(error =>{
+					req.flash('error', 'Failed saving new image: '+ error.message);
+					cloudinary.api.delete_resources(uploadResult.public_id);
+				});
+			})
+			.catch(error =>{
+				req.flash('error', 'Failed saving the new attachment: '+ error.message);
+			})
+			.then(()=>{
+				fs.unlink(req.file.path);
+			});
+
+		}
+
+		
+	})
+	.then(()=>{
+		res.redirect('/quizzes/'+ req.quiz.id);
 	})
 	.catch(Sequelize.ValidationError, error =>{
 		req.flash('error','There are errors in the form:');
@@ -160,6 +266,13 @@ exports.update = (req,res,next) => {
 
 // DELETE /quizzes/:quizId
 exports.destroy = (req,res,next) => {
+
+	if(req.quiz.attachment){
+		attHelper.checksCloudinaryEnv()
+		.then(()=>{
+			cloudinary.api.delete_resources(req.quiz.attachment.public_id);
+		})
+	}
 
 	req.quiz.destroy()
 	.then(()=> {
@@ -180,7 +293,8 @@ exports.play = (req,res,next) => {
 
 	res.render('quizzes/play',{
 		quiz,
-		answer
+		answer,
+		cloudinary
 	});
 	
 };

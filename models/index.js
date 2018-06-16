@@ -15,15 +15,20 @@ sequelize.import(path.join(__dirname, 'quiz'));
 sequelize.import(path.join(__dirname, 'session'));
 sequelize.import(path.join(__dirname, 'tip'));
 sequelize.import(path.join(__dirname, 'user'));
+sequelize.import(path.join(__dirname, 'attachment'));
+
 
 // Relation between models
 
-const {quiz, tip, user} = sequelize.models;
+const {quiz, tip, user, attachment} = sequelize.models;
 
 tip.belongsTo(quiz);
 quiz.hasMany(tip);
 
 user.hasMany(quiz, {foreignKey: 'authorId'});
-quiz.belongsTo(user, {as: 'author',foreignKey: 'authorId'})
+quiz.belongsTo(user, {as: 'author',foreignKey: 'authorId'});
+
+attachment.belongsTo(quiz);
+quiz.hasOne(attachment);
 
 module.exports =sequelize;

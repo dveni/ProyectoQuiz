@@ -8,11 +8,15 @@
 
  <h1><%= title || "Questions" %>:</h1>
 
-<table>
+<table id="quizzesIndex">
 	<% for (var i in quizzes){ %>
 	<% var quiz = quizzes[i]; %>
 
 	<tr>
+		<td>
+			<% var attachment = quiz.attachment; %>
+			<% include ../attachments/_show %>
+		</td>
 		<td>
 			<a href="/quizzes/<%=quiz.id %>/play"> <%= quiz.question %> </a>
 		</td>

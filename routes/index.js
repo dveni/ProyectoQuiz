@@ -1,6 +1,9 @@
 var express = require('express');
 var router = express.Router();
 
+const multer = require('multer');
+const upload = multer({dest: './uploads/'});
+
 const quizController = require('../controllers/quiz');
 const tipController = require('../controllers/tip');
 const userController = require('../controllers/user');
@@ -66,10 +69,13 @@ router.get('/users/:userId(\\d+)/quizzes', sessionController.loginRequired, quiz
 router.get('/quizzes', 						quizController.index);
 router.get('/quizzes/:quizId(\\d+)',	 	quizController.show);
 router.get('/quizzes/new', 					sessionController.loginRequired, quizController.new);
-router.post('/quizzes', 					sessionController.loginRequired, quizController.create);
-router.get('/quizzes/:quizId(\\d+)/edit', 	sessionController.loginRequired, quizController.adminOrAuthorRequired, quizController.edit);
-router.put('/quizzes/:quizId(\\d+)', 		sessionController.loginRequired, quizController.adminOrAuthorRequired, quizController.update);
-router.delete('/quizzes/:quizId(\\d+)', 	sessionController.loginRequired, quizController.adminOrAuthorRequired, quizController.destroy);
+router.post('/quizzes', 					sessionController.loginRequired, upload.single('image'), quizController.create);
+router.get('/quizzes/:quizId(\\d+)/edit', 	
+	sessionController.loginRequired, quizController.adminOrAuthorRequired, quizController.edit);
+router.put('/quizzes/:quizId(\\d+)', 		
+	sessionController.loginRequired, quizController.adminOrAuthorRequired, upload.single('image'), quizController.update);
+router.delete('/quizzes/:quizId(\\d+)', 	
+	sessionController.loginRequired, quizController.adminOrAuthorRequired, quizController.destroy);
 
 router.get('/quizzes/:quizId(\\d+)/play', quizController.play);
 router.get('/quizzes/:quizId(\\d+)/check', quizController.check);

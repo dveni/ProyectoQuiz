@@ -4,10 +4,17 @@
 
 <h1> Show question</h1>
 
-<ul>
-	<li> Question: <b><%= quiz.question%> </b></li>
-	<li> answer: <b><%= quiz.answer %> </b></li>
-</ul>
+<div class="quizItem">
+	<div>
+		<% var attachment = quiz.attachment; %>
+		<% include ../attachments/_show %>
+	</div>
+		<ul>
+			<li> Question: <b><%= quiz.question%> </b></li>
+			<li> answer: <b><%= quiz.answer %> </b></li>
+		</ul>
+
+</div>
 
 
 <h1>Tips:</h1>
