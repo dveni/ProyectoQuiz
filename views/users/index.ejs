@@ -11,14 +11,19 @@
 		</td>
 		
 		<% if (session.user) { %>
-		<td>
-			<a href="/users/<%= user.id %>/edit"><button>Edit</button></a>
-		</td>
-		<td>
-			<a href="/users/<%=user.id%>?_method=DELETE" onClick="return confirm('Delete: <%= user.username %>');">
-				<button>Delete</button>
-			</a>
-		</td>
+			<% if(session.user.isAdmin || session.user.id=== user.id){ %>
+				<td>
+					<a href="/users/<%= user.id %>/edit"><button>Edit</button></a>
+				</td>
+			<% }%>
+
+			<% if(session.user.isAdmin && session.user.id !== user.id){%>
+				<td>
+					<a href="/users/<%=user.id%>?_method=DELETE" onClick="return confirm('Delete: <%= user.username %>');">
+						<button>Delete</button>
+					</a>
+				</td>
+			<%}%>
 		<% } %>
 	</tr>
 

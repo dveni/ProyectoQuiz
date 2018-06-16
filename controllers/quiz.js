@@ -23,6 +23,19 @@ exports.load = (req,res,next, quizId) =>{
 	
 };
 
+exports.adminOrAuthorRequired = (req,res,next) =>{
+	const isAdmin = !!req.session.user.isAdmin;
+	const isAuthor = req.quiz.authorId === req.session.user.id;
+
+	if(isAdmin || isAuthor){
+		next();
+	}else{
+		console.log('Prohibited operation: Only admins and author of the quiz');
+		res.send(403);
+	}
+
+};
+
 // GET /quizzes
 exports.index = (req,res,next) => {
 	

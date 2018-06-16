@@ -55,9 +55,9 @@ router.delete('/session', sessionController.destroy); // close sesion
 	router.get('/users/:userId(\\d+)', 	sessionController.loginRequired,userController.show);
 	router.get('/users/new', 			userController.new);
 	router.post('/users', 				userController.create);
-router.get('/users/:userId(\\d+)/edit', sessionController.loginRequired,userController.edit);
-router.put('/users/:userId(\\d+)', 		sessionController.loginRequired,userController.update);
-router.delete('/users/:userId(\\d+)', 	sessionController.loginRequired,userController.destroy);
+router.get('/users/:userId(\\d+)/edit', sessionController.loginRequired, sessionController.adminOrMyselfRequired, userController.edit);
+router.put('/users/:userId(\\d+)', 		sessionController.loginRequired, sessionController.adminOrMyselfRequired, userController.update);
+router.delete('/users/:userId(\\d+)', 	sessionController.loginRequired, sessionController.adminOrMyselfRequired, userController.destroy);
 
 router.get('/users/:userId(\\d+)/quizzes', sessionController.loginRequired, quizController.index);
 
@@ -67,15 +67,17 @@ router.get('/quizzes', 						quizController.index);
 router.get('/quizzes/:quizId(\\d+)',	 	quizController.show);
 router.get('/quizzes/new', 					sessionController.loginRequired, quizController.new);
 router.post('/quizzes', 					sessionController.loginRequired, quizController.create);
-router.get('/quizzes/:quizId(\\d+)/edit', 	sessionController.loginRequired, quizController.edit);
-router.put('/quizzes/:quizId(\\d+)', 		sessionController.loginRequired, quizController.update);
-router.delete('/quizzes/:quizId(\\d+)', 	sessionController.loginRequired, quizController.destroy);
+router.get('/quizzes/:quizId(\\d+)/edit', 	sessionController.loginRequired, quizController.adminOrAuthorRequired, quizController.edit);
+router.put('/quizzes/:quizId(\\d+)', 		sessionController.loginRequired, quizController.adminOrAuthorRequired, quizController.update);
+router.delete('/quizzes/:quizId(\\d+)', 	sessionController.loginRequired, quizController.adminOrAuthorRequired, quizController.destroy);
 
 router.get('/quizzes/:quizId(\\d+)/play', quizController.play);
 router.get('/quizzes/:quizId(\\d+)/check', quizController.check);
 
 router.post('/quizzes/:quizId(\\d+)/tips', sessionController.loginRequired, tipController.create);
-router.put('/quizzes/:quizId(\\d+)/tips/:tipId(\\d+)/accept', sessionController.loginRequired, tipController.accept);
-router.delete('/quizzes/:quizId(\\d+)/tips/:tipId(\\d+)', sessionController.loginRequired, tipController.destroy);
+router.put('/quizzes/:quizId(\\d+)/tips/:tipId(\\d+)/accept', 
+	sessionController.loginRequired, quizController.adminOrAuthorRequired, tipController.accept);
+router.delete('/quizzes/:quizId(\\d+)/tips/:tipId(\\d+)',
+	sessionController.loginRequired, quizController.adminOrAuthorRequired, tipController.destroy);
 
 module.exports = router;
