@@ -110,5 +110,5 @@ exports.destroy = (req, res, next) => {
 
     delete req.session.user;
 
-    res.redirect("/session"); // redirect to login gage
+    res.redirect("/goback"); // redirect to login gage
 };

@@ -37,7 +37,7 @@ exports.index = (req,res,next) => {
 
 	if(req.user){
 		countOptions.where.authorId = req.user.id;
-		title = "Questions of" + req.user.username;
+		title = "Questions of " + req.user.username;
 	}
 
 	models.quiz.count(countOptions)
