@@ -19,6 +19,7 @@
 		<td colspan="2">
 			<small>(by <%= quiz.author ? quiz.author.username : "Anonymous" %> )</small>
 		</td>
+		<% if(session.user) { %>
 		<td>
 			<a href="/quizzes/<%= quiz.id %>"><button>Show</button></a>
 		</td>
@@ -30,9 +31,12 @@
 				<button>Delete</button>
 			</a>
 		</td>
+		<% } %>
 	</tr>
 
 	<%}%>
 </table>
 
-<a href="/quizzes/new"><button type="button">Create new question</button></a>
+<% if(session.user) { %>
+	<a href="/quizzes/new"><button type="button">Create new question</button></a>
+	<% } %>

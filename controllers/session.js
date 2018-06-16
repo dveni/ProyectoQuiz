@@ -12,6 +12,14 @@ const url = require('url');
 const maxIdleTime = 5*60*1000;
 
 
+exports.loginRequired = (req,res,next) =>{
+    if(req.session.user){
+        next();
+    }else{
+        res.redirect('/session?redir=' + (req.param('redir') || req.url ));
+    }
+};
+
 //
 // Middleware used to destroy the user's session if the inactivity time
 // has been exceeded.
