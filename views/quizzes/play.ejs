@@ -3,8 +3,16 @@
 </div>
 
 <h1>Play:</h1>
-
+	
+<div class="quizItem">
+	<div>
+		<% var attachment = quiz.attachment; %>
+		<% include ../attachments/_show %>
+	</div>
 <form method="get" action="/quizzes/<%= quiz.id %>/check">
+
+    <% include ../favourites/_stars.ejs %>
+
 	<p>Question: <b><%= quiz.question %></b></p>
 
 	<div class="wideRow">
@@ -12,6 +20,8 @@
 		<input type="submit" class="itemNarrow" value="Check">
 	</div>
 </form>
+
+</div>
 
 <h1>Tips:</h1>
 
