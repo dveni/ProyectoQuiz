@@ -10,6 +10,9 @@
 		<% include ../attachments/_show %>
 	</div>
 <form method="get" action="/quizzes/<%= quiz.id %>/check">
+
+    <% include ../favourites/_stars.ejs %>
+
 	<p>Question: <b><%= quiz.question %></b></p>
 
 	<div class="wideRow">

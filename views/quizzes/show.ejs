@@ -9,11 +9,16 @@
 		<% var attachment = quiz.attachment; %>
 		<% include ../attachments/_show %>
 	</div>
-		<ul>
-			<li> Question: <b><%= quiz.question%> </b></li>
-			<li> answer: <b><%= quiz.answer %> </b></li>
-		</ul>
+	<div>
+		<% include ../favourites/_stars.ejs %>
+		<br/>
+			 Question: <b><%= quiz.question%> </b>
+			 <br/>
+			 answer: <b><%= quiz.answer %> </b>
 
+		<br/>
+
+	</div>
 </div>
 
 

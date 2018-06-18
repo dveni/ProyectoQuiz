@@ -31,4 +31,7 @@ quiz.belongsTo(user, {as: 'author',foreignKey: 'authorId'});
 attachment.belongsTo(quiz);
 quiz.hasOne(attachment);
 
+quiz.belongsToMany(user, {as:'fans', through: 'favourites', foreignKey: 'quizId', otherKey: 'userId'});
+user.belongsToMany(quiz, {as:'favouriteQuizzes', through: 'favourites', foreignKey: 'userId', otherKey: 'quizId'});
+
 module.exports =sequelize;
