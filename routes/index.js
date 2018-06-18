@@ -84,11 +84,19 @@ router.get('/quizzes/:quizId(\\d+)/check', quizController.check);
 router.get('/quizzes/randomplay', quizController.randomPlay);
 router.get('/quizzes/randomcheck/:quizId(\\d+)', quizController.randomcheck);
 
+// Routes for the resource tips
+
 router.post('/quizzes/:quizId(\\d+)/tips', sessionController.loginRequired, tipController.create);
 router.put('/quizzes/:quizId(\\d+)/tips/:tipId(\\d+)/accept', 
 	sessionController.loginRequired, quizController.adminOrAuthorRequired, tipController.accept);
 router.delete('/quizzes/:quizId(\\d+)/tips/:tipId(\\d+)',
 	sessionController.loginRequired, quizController.adminOrAuthorRequired, tipController.destroy);
+router.get('/quizzes/:quizId(\\d+)/tips/:tipId(\\d+)/edit', 
+    sessionController.loginRequired,
+    tipController.adminOrAuthorRequired);
+router.put('/quizzes/:quizId(\\d+)/tips/:tipId(\\d+)', 
+    sessionController.loginRequired,
+    tipController.adminOrAuthorRequired);
 
 
 // Routes for the resource favourites of a user
