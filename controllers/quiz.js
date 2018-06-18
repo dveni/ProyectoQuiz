@@ -147,3 +147,53 @@ exports.check = (req,res,next) => {
 
 };
 
+// GET /quizzes/randomPlay
+exports.randomPlay = (req, res, next) => {
+    req.session.randomPlay= req.session.randomPlay || [];
+    req.session.score = req.session.score || 0;
+    const score = req.session.score;
+    const toBeAnswered = req.session.randomPlay;
+
+    models.quiz.findOne({where: {id: {[Sequelize.Op.notIn] : toBeAnswered}} ,order: [Sequelize.fn('RANDOM')] })
+    .then(quiz =>{
+        if(quiz){
+            req.session.randomPlay.push(quiz.id);
+             res.render('quizzes/random_play', {
+                quiz,
+                score
+            });
+        }else{
+           
+            
+            delete req.session.randomPlay;
+            delete req.session.score;
+            res.render('quizzes/random_nomore', {score});
+        }
+    })
+    .catch(error => next(error));
+};
+
+// GET /quizzes/randomcheck/:quizId?answer=respuesta
+exports.randomcheck = (req, res, next) => {
+
+    let {quiz, query} = req;
+    let score = req.session.score;
+    const answer = query.answer || "";
+    const result = answer.toLowerCase().trim() === quiz.answer.toLowerCase().trim();
+   
+    if (result){
+        req.session.score++;
+        score = req.session.score;
+
+    }else{
+        delete req.session.randomPlay;
+        delete req.session.score;
+    }
+
+    res.render('quizzes/random_result', {
+        score,
+        result,
+        answer
+    });  
+};
+
