@@ -1,8 +1,38 @@
+<div class="right">
+	<small> (by <%= quiz.author ? quiz.author.username : "Anonymous" %> )</small>
+</div>
+
 <h1> Show question</h1>
 
-<ul>
-	<li> Question: <b><%= quiz.question%> </b></li>
-	<li> answer: <b><%= quiz.answer %> </b></li>
-</ul>
+<div class="quizItem">
+	<div>
+		<% var attachment = quiz.attachment; %>
+		<% include ../attachments/_show %>
+	</div>
+	<div>
+		<% include ../favourites/_stars.ejs %>
+		<br/>
+			 Question: <b><%= quiz.question%> </b>
+			 <br/>
+			 answer: <b><%= quiz.answer %> </b>
 
-<a href="/quizzes"><button>Go back</button></a>
+		<br/>
+
+	</div>
+</div>
+
+
+<h1>Tips:</h1>
+
+<% if(session.user) { %>
+
+	<% include ../tips/new %>
+
+	<% } %>
+	
+<% var tips = quiz.tips; %>
+<% var quizId = quiz.id; %>
+<% var quizAuthorId = quiz.authorId; %>
+<% include ../tips/index %>
+
+<a href="/goback"><button>Go back</button></a>

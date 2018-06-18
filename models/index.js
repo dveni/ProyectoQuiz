@@ -13,20 +13,25 @@ const path = require('path');
 
 sequelize.import(path.join(__dirname, 'quiz'));
 sequelize.import(path.join(__dirname, 'session'));
+sequelize.import(path.join(__dirname, 'tip'));
+sequelize.import(path.join(__dirname, 'user'));
+sequelize.import(path.join(__dirname, 'attachment'));
 
-sequelize.sync()
-.then(()=> console.log('Data Bases created successfully'))
-.then(() => sequelize.models.quiz.count())
-.then(count=>{
-  if(!count){
-    return sequelize.models.quiz.bulkCreate([
-        {question: "Capital de Italia", answer: "roma"},
-        {question: "Capital de Francia", answer: "paris"},
-        {question: "Capital de España", answer: "madrid"},
-        {question: "Capital de Portugal", answer: "lisboa"}
-      ]);
-  }
-})
-.catch(error=>next(error));
+
+// Relation between models
+
+const {quiz, tip, user, attachment} = sequelize.models;
+
+tip.belongsTo(quiz);
+quiz.hasMany(tip);
+
+user.hasMany(quiz, {foreignKey: 'authorId'});
+quiz.belongsTo(user, {as: 'author',foreignKey: 'authorId'});
+
+attachment.belongsTo(quiz);
+quiz.hasOne(attachment);
+
+quiz.belongsToMany(user, {as:'fans', through: 'favourites', foreignKey: 'quizId', otherKey: 'userId'});
+user.belongsToMany(quiz, {as:'favouriteQuizzes', through: 'favourites', foreignKey: 'userId', otherKey: 'quizId'});
 
 module.exports =sequelize;

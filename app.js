@@ -24,6 +24,16 @@ app.use(methodOverride('_method', {methods: ["POST","GET"]}));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(partials());
 
+if(app.get('env')=== 'production'){
+	app.use((req, res, next)=>{
+		if(req.headers['x-forwarded-proto'] !== 'https'){
+			res.redirect('https://'+req.get('Host')+req.url);
+		}else{
+			next()
+		}
+	});
+}
+
 // Session configuration to be stored in DB with Sequelize
 var sequelize = require("./models");
 var sessionStore = new SequelizeStore({
@@ -40,6 +50,12 @@ app.use(session({
 }));
 app.use(flash());
 
+app.use(function(req,res,next){
+	res.locals.session = req.session;
+	    res.locals.url = req.url;
+
+	next();
+});
 
 app.use('/', indexRouter);
 

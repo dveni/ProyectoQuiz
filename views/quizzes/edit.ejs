@@ -1,5 +1,5 @@
 <h1> Edit question:</h1>
 
-<form method="post" action="/quizzes/<%= quiz.id %>?_method=PUT">
+<form method="post" action="/quizzes/<%= quiz.id %>?_method=PUT" enctype="multipart/form-data" >
 	<% include _form.ejs %>
 </form>
