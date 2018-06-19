@@ -14,7 +14,9 @@
 <p>
     <% if (!result) { %>
     You have failed.
-    <a href="/quizzes"> End of Play </a>
+    <br/>
+    <a href="/quizzes/randomplay"> <button> Play again </button></a>
+    <a href="/quizzes"> <button> End of Play </button></a>
     <% } else { %>
     You have succeeded.
     <a href="/quizzes/randomplay"><button>Continue playing</button></a>

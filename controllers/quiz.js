@@ -488,10 +488,33 @@ exports.randomPlay = (req, res, next) => {
     .then(quiz =>{
         if(quiz){
             req.session.randomPlay.push(quiz.id);
+
+            new Promise(function (resolve, reject) {
+
+                // Only for logger users:
+                //   if this quiz is one of my fovourites, then I create
+                //   the attribute "favourite = true"
+                if (req.session.user) {
+                    resolve(
+                        quiz.getFans({where: {id: req.session.user.id}})
+                        .then(fans => {
+                            if (fans.length > 0) {
+                                quiz.favourite = true
+                            }
+                        })
+                    );
+                } else {
+                    resolve();
+                }
+            })
+            .then(()=>{
              res.render('quizzes/random_play', {
                 quiz,
-                score
+                score,
+                cloudinary
             });
+         })
+        .catch(error=> next(error));
         }else{
            
             

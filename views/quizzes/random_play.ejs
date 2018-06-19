@@ -6,7 +6,15 @@
     Successful answers = <span id="score"><%= score %></span>
 </div>
 
+<div class="quizItem">
+	<div>
+		<% var attachment = quiz.attachment; %>
+		<% include ../attachments/_show %>
+	</div>
+
 <form method="get" action="/quizzes/randomcheck/<%= quiz.id %>">
+
+    <% include ../favourites/_stars.ejs %>
 
     <p>
         Question: <b><%= quiz.question %></b>
@@ -17,5 +25,15 @@
         <input type="text" class="itemWide" id="answer" name="answer" value="" placeholder="Answer" autocomplete="off"/>
         <input type="submit" class="itemNarrow" id="send" value="Check">
     </div>
-</form>
 
+
+</form>
+</div>
+
+<h1>Tips:</h1>
+
+
+<% var tips = quiz.tips; %>
+<% var quizId = quiz.id; %>
+<% var quizAuthorId = quiz.authorId; %>
+<% include ../tips/index %>
