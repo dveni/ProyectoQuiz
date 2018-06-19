@@ -61,7 +61,7 @@ exports.create = (req,res,next) => {
 
 	tip.save()
 	.then(tip => {
-		req.flash('success','Tip created successfully.')
+		req.flash('success','Tip created successfully. Waiting for validation.')
 		res.redirect("back")
 	})
 	.catch(Sequelize.ValidationError, error =>{
