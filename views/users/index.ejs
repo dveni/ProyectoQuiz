@@ -9,6 +9,10 @@
 			<a href="/users/<%=user.id %>"> <%= user.username %> </a>
 			<%= user.isAdmin ? "(admin)" : "" %>
 		</td>
+
+		<td>
+			Best score: <%= user.bestScore %>
+		</td>
 		
 		<% if (session.user) { %>
 			<% if(session.user.isAdmin || session.user.id=== user.id){ %>

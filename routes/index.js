@@ -43,6 +43,9 @@ router.get('/author', function(req, res, next) {
   res.render('author');
 });
 
+// Best scores page
+router.get('/ranking', userController.ranking);
+
 // Autoload for routes using :quizId
 router.param('quizId', quizController.load);
 router.param('userId', userController.load);

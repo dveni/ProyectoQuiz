@@ -23,6 +23,10 @@ module.exports = function(sequelize, DataTypes){
 		isAdmin:{
 			type: DataTypes.BOOLEAN,
 			defaultValue: false
+		},
+		bestScore: {
+			type: DataTypes.INTEGER,
+			defaultValue: 0
 		}
 		
 	});

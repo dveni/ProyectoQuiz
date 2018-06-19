@@ -149,7 +149,8 @@ exports.create = (req, res, next) => {
                 id: user.id,
                 username: user.username,
                 isAdmin: user.isAdmin,
-                expires: Date.now() + maxIdleTime
+                expires: Date.now() + maxIdleTime,
+                bestScore: user.bestScore
             };
 
             res.redirect(redir); 

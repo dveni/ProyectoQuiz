@@ -517,7 +517,38 @@ exports.randomPlay = (req, res, next) => {
         .catch(error=> next(error));
         }else{
            
+            if(req.session.user && (score > req.session.user.bestScore) ){
             
+            models.user.findById(req.session.user.id)
+            .then(user => {
+                if (user) {
+                req.user = user;
+
+                if(score > req.user.bestScore){
+                    req.user.bestScore = score;
+                }
+
+                req.user.save({fields: ["bestScore"]})
+                .then(user => {
+                    
+                    
+                })
+                .catch(error => {
+                    req.flash('error','Error updating the best score: '+ error.message);
+                    next(error)
+                });
+
+                }else{
+                    req.flash('error', 'There is no user with id='+ userId);
+                    throw new Error('There is no user with id='+ userId);
+                }
+            })
+            .catch(error => next(error));
+
+            
+            
+
+        }
             delete req.session.randomPlay;
             delete req.session.score;
             res.render('quizzes/random_nomore', {score});
@@ -539,6 +570,40 @@ exports.randomcheck = (req, res, next) => {
         score = req.session.score;
 
     }else{
+
+        if(req.session.user && (score > req.session.user.bestScore) ){
+            
+            models.user.findById(req.session.user.id)
+            .then(user => {
+                if (user) {
+                req.user = user;
+
+                if(score > req.user.bestScore){
+                    req.user.bestScore = score;
+                }
+
+                req.user.save({fields: ["bestScore"]})
+                .then(user => {
+                    
+                    
+                })
+                .catch(error => {
+                    req.flash('error','Error updating the best score: '+ error.message);
+                    next(error)
+                });
+
+                }else{
+                    req.flash('error', 'There is no user with id='+ userId);
+                    throw new Error('There is no user with id='+ userId);
+                }
+            })
+            .catch(error => next(error));
+
+            
+            
+
+        }
+
         delete req.session.randomPlay;
         delete req.session.score;
     }

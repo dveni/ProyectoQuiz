@@ -1,0 +1,22 @@
+<h1>Ranking: Best scores:</h1>
+
+<table>
+	<% for (var i in users){ %>
+	<% var user = users[i]; %>
+
+	<tr>
+		<td>
+			<% n = parseInt(i)+1 %>
+			<%=n%>.- <a href="/users/<%=user.id %>"> <%= user.username %> </a>
+			
+		</td>
+
+		<td>
+			Best score: <%= user.bestScore %>
+		</td>
+		
+		
+	</tr>
+
+	<%}%>
+</table>

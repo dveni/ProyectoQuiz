@@ -151,3 +151,28 @@ exports.destroy = (req,res,next) => {
 		next(error)
 	});
 };
+
+
+// GET /ranking
+exports.ranking = (req,res,next )=>{
+	models.user.count()
+	.then(count =>{
+		const items_per_page = 10;
+
+		const pageno = parseInt(req.query.pageno) || 1;
+
+		res.locals.paginate_control = paginate(count, items_per_page, pageno, req.url);
+
+		const findOptions = {
+			order:  [['bestScore', 'DESC']],
+			offset: items_per_page * (pageno-1),
+			limit: items_per_page
+		};
+		return models.user.findAll(findOptions);
+	})
+	.then(users=>{
+		res.render('users/ranking.ejs', {users});
+	})
+	.catch(error=> next(error));
+
+}
